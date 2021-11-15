@@ -1,32 +1,54 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <div id="app">
+        <MyNavbar />
+        <!-- <keep-alive> -->
+            <router-view />
+        <!-- </keep-alive> -->
     </div>
-    <router-view/>
-  </div>
 </template>
 
+<script>
+import MyNavbar from "@/components/MyNavbar.vue";
+
+export default {
+    components: { MyNavbar },
+};
+</script>
+
 <style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+@import (css)
+    url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+* {
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
 }
 
-#nav {
-  padding: 30px;
+body {
+    margin: 0;
+    padding: 0;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+.button {
+    padding: 10px 25px;
+    margin: 20px auto 0px auto;
+    display: inline-block;
+    background: rgba(0, 123, 255, 1);
+    color: white;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all ease 0.2s;
+    border: none;
 
-    &.router-link-exact-active {
-      color: #42b983;
+    .b-icon {
+        transform: translateX(5px);
+        transition: inherit;
     }
-  }
+    &:hover {
+        background: rgba(0, 123, 255, 0.8);
+        .b-icon {
+            transform: translateX(10px);
+        }
+    }
 }
 </style>
