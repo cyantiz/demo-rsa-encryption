@@ -1,9 +1,7 @@
 <template>
     <div id="app">
         <MyNavbar />
-        <!-- <keep-alive> -->
-            <router-view />
-        <!-- </keep-alive> -->
+        <router-view />
     </div>
 </template>
 
@@ -39,6 +37,7 @@ body {
     border-radius: 2px;
     transition: all ease 0.2s;
     border: none;
+    user-select: none;
 
     .b-icon {
         transform: translateX(5px);

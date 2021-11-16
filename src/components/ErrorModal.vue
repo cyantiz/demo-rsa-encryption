@@ -1,0 +1,44 @@
+<template>
+    <div class="error-modal">
+            <div class="error-box">
+                <p>There has been an error processing decryption</p>
+                <p>Please check the input values</p>
+                <div class="error-button" @click="$emit('close-modal')">OK</div>
+            </div>   
+    </div>
+</template>
+
+<style lang="less" scoped>
+.error-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    background: rgba(0,0,0,0.5);
+    .error-box {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 10px;
+        color: red;
+        p {
+            margin-bottom: 3px;
+            font-size: 14px;
+        }
+    }
+    .error-button {
+        margin-top: 10px;
+        display: inline-block;
+        background: #2c2c2c;
+        padding: 8px 20px;
+        cursor: pointer;
+        color: white;
+        border-radius: 30px;
+        font-size: 14px;
+    }
+}
+</style>

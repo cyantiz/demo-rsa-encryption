@@ -2,8 +2,12 @@
     <div id="gen-key">
         <div class="loading" v-if="loading">
             <div class="title">Key is generating...</div>
-            <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-            
+            <div class="lds-ellipsis">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
         </div>
         <div class="key-container">
             <div class="public-key">
@@ -54,8 +58,10 @@ export default {
             this.loading = true;
             let bits = 2048;
             // generate prime pair p, q
-            let p = await this.randomPrime(bits / 2);
-            let q = await this.randomPrime(bits / 2);
+            let p = BigInt(0),
+                q = BigInt(0);
+            p = await this.randomPrime(bits / 2);
+            q = await this.randomPrime(bits / 2);
             let n = p * q;
             let phi = (p - BigInt(1)) * (q - BigInt(1));
 
@@ -67,7 +73,7 @@ export default {
             this.modulus = this.converToHex(n);
             this.privateExponent = this.converToHex(d);
             this.publicExponent = e.toString();
-            this.printProgress(p, q, n, phi, e, d);
+            // this.printProgress(p, q, n, phi, e, d);
             this.loading = false;
         },
         async randomPrime(bits) {
@@ -128,6 +134,9 @@ export default {
 }
 
 .key-container {
+    @media (max-width: 920px) {
+        width: 90%;
+    }
     width: 900px;
     margin: auto;
     text-align: center;
@@ -137,20 +146,21 @@ export default {
     .public-key,
     .private-key {
         .title {
-            margin: 10px 0;
+            margin: 15px 0 5px 0;
             font-weight: 800;
+            font-size: 20px;
             text-align: left;
         }
         .sub-title {
             text-align: left;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .key-area {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: 30px;
+            height: 40px;
             padding: 10px;
             border: 1px solid black;
             border-radius: 2px;
@@ -159,10 +169,11 @@ export default {
             font-family: "consolas", sans-serif;
             word-wrap: break-word;
             word-break: break-all;
+            overflow-y: auto;
         }
         .key-area.public-key-modulus,
         .key-area.private-key-exponent {
-            height: 150px;
+            height: 160px;
         }
     }
 }

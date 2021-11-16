@@ -1,5 +1,6 @@
 <template>
     <form id="encrypt" @submit.prevent="encrypt">
+        <ErrorModal v-if="error" @close-modal="error = false" />
         <div class="container">
             <div class="plaintext">
                 <h3 class="plaintext-title title">Plaintext:</h3>
@@ -31,39 +32,52 @@
         <button type="submit" class="genkey-button button">
             Encrypt<BIconArrowRight />
         </button>
-        <input class="ciphertext" disabled v-if="cipherText" v-model="cipherText">
+        <input
+            class="ciphertext"
+            disabled
+            v-if="cipherText"
+            v-model="cipherText"
+        />
     </form>
 </template>
 
 <script>
 import { BIconArrowRight } from "bootstrap-vue";
+import ErrorModal from "@/components/ErrorModal.vue";
 
 export default {
-    components: { BIconArrowRight },
+    components: { BIconArrowRight, ErrorModal },
     data() {
         return {
             plainText: "",
             cipherText: "",
             publicExponent: 65537, //e
             modulus: "", //n
+            error: false,
         };
     },
     methods: {
         encrypt() {
-            // convert M (text) -> m (number)
-            let m = this.stringToUTF8Array(this.plainText).join("");
-            console.log(m);
-            m = BigInt("0x" + m);
+            this.error = false;
+            this.cipherText = "";
+            try {
+                // convert M (text) -> m (number)
+                let m = this.stringToUTF8Array(this.plainText).join("");
+                m = BigInt("0x" + m);
 
-            // convert key (hex) -> decimal number
-            let n = BigInt("0x" + this.modulus.trim().split(" ").join(""));
-            let e = BigInt(this.publicExponent);
-            
-            // encrypt
-            let c = this.modPrimePow(m, e, n);
-            
-            // convert c -> base64 text to show
-            this.cipherText = this.bigIntToBase64(c);
+                // convert key (hex) -> decimal number
+                let n = BigInt("0x" + this.modulus.trim().split(" ").join(""));
+                let e = BigInt(this.publicExponent);
+
+                // encrypt
+                let c = this.modPrimePow(m, e, n);
+
+                // convert c -> base64 text to show
+                this.cipherText = this.bigIntToBase64(c);
+            } catch (err) {
+                this.error = true;
+                return;
+            }
         },
         stringToUTF8Array(s) {
             let res = new TextEncoder("utf-8")
@@ -125,13 +139,14 @@ export default {
         margin-bottom: 10px;
 
         .title {
-            margin: 10px 0;
+            margin: 15px 0 5px 0;
             font-weight: 800;
+            font-size: 20px;
             text-align: left;
         }
         .sub-title {
             text-align: left;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .key-area,
         .plaintext-area {
@@ -139,7 +154,7 @@ export default {
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: 30px;
+            height: 40px;
             padding: 10px;
             border: 1px solid black;
             border-radius: 2px;
@@ -153,6 +168,9 @@ export default {
 .ciphertext {
     display: flex;
     width: calc(900px - 30px);
+    @media (max-width: 990px) {
+        width: calc(100% - 30px);
+    }
     height: 30px;
     margin: 20px auto 0 auto;
     padding: 10px;

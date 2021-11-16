@@ -1,5 +1,6 @@
 <template>
     <form id="decrypt" @submit.prevent="decrypt">
+        <ErrorModal v-if="error" @close-modal="error = false" />
         <div class="container">
             <div class="ciphertext">
                 <h3 class="ciphertext-title title">Ciphertext:</h3>
@@ -26,52 +27,60 @@
                     v-model="modulus"
                     required
                 />
-                <div style="height: 20px"></div>
-                
             </div>
         </div>
         <button type="submit" class="genkey-button button">
             Decrypt<BIconArrowRight />
         </button>
         <div class="plaintext" v-if="plainText">
-            <h3 class="title">Plaintext:</h3>
-            <input disabled v-model="plainText">
+            <input disabled v-model="plainText" />
         </div>
     </form>
 </template>
 
 <script>
 import { BIconArrowRight } from "bootstrap-vue";
+import ErrorModal from "@/components/ErrorModal.vue";
 
 export default {
-    components: { BIconArrowRight },
+    components: { BIconArrowRight, ErrorModal },
     data() {
         return {
             cipherText: "",
             plainText: "",
             modulus: "", //n
+            error: false,
             privateExponent: "", //d
         };
     },
     methods: {
         decrypt() {
-            // convert ciphertext from base64 -> decimal number
-            let c = this.base64ToBigInt(this.cipherText.trim());
+            this.error = false;
+            this.plainText = "";
+            try {
+                // convert ciphertext from base64 -> decimal number
+                let c = this.base64ToBigInt(this.cipherText.trim());
 
-            // convert key from hex -> decimal number
-            let n = BigInt("0x" + this.modulus.trim().split(" ").join(""));
-            let d = BigInt("0x" + this.privateExponent.trim().split(" ").join(""));
+                // convert key from hex -> decimal number
+                let n = BigInt("0x" + this.modulus.trim().split(" ").join(""));
+                let d = BigInt(
+                    "0x" + this.privateExponent.trim().split(" ").join("")
+                );
 
-            // decrypt
-            let m = this.modPrimePow(c, d, n);
+                // decrypt
+                let m = this.modPrimePow(c, d, n);
 
-            // convert m (number) -> M (text) to show
-            m = m.toString(16);
-            if(m.length % 2 != 0) c = "0" + c;
-            this.plainText = this.UTF8ArrayToString(m.match(/.{1,2}/g));
+                // convert m (number) -> M (text) to show
+                m = m.toString(16);
+                if (m.length % 2 != 0) c = "0" + c;
+                this.plainText = this.UTF8ArrayToString(m.match(/.{1,2}/g));
+            } catch (err) {
+                this.error = true;
+                return;
+            }
         },
         UTF8ArrayToString(arr) {
-            arr = arr.map(x => parseInt(x, 16))
+            arr = arr.map((x) => parseInt(x, 16));
             var encodedString = String.fromCharCode.apply(null, arr),
                 decodedString = decodeURIComponent(escape(encodedString));
             return decodedString;
@@ -124,13 +133,14 @@ export default {
         margin-bottom: 10px;
 
         .title {
-            margin: 10px 0;
+            margin: 15px 0 5px 0;
             font-weight: 800;
             text-align: left;
+            font-size: 20px;
         }
         .sub-title {
             text-align: left;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .key-area,
         .ciphertext-area {
@@ -138,7 +148,7 @@ export default {
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: 30px;
+            height: 40px;
             padding: 10px;
             border: 1px solid black;
             border-radius: 2px;
@@ -150,36 +160,39 @@ export default {
     }
 }
 .plaintext {
+    @media (max-width: 990px) {
+        width: calc(100% - 30px);
+    }
     width: calc(900px - 30px);
-    margin: auto;
+    margin: 20px auto 0 auto;
     text-align: center;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
     .title {
-            margin: 10px 0;
-            font-weight: 800;
-            text-align: left;
-        }
-        .sub-title {
-            text-align: left;
-            margin-top: 10px;
-        }
-        input {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 30px;
-            padding: 10px;
-            border: 1px solid black;
-            background: white;
-            color: black;
-            border-radius: 2px;
-            font-family: "consolas", sans-serif;
-            font-size: 13px;
-            word-wrap: break-word;
-            word-break: break-all;
-        }
+        margin: 10px 0;
+        font-weight: 800;
+        text-align: left;
+    }
+    .sub-title {
+        text-align: left;
+        margin-top: 10px;
+    }
+    input {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 30px;
+        padding: 10px;
+        border: 1px solid black;
+        background: white;
+        color: black;
+        border-radius: 2px;
+        font-family: "consolas", sans-serif;
+        font-size: 13px;
+        word-wrap: break-word;
+        word-break: break-all;
+    }
 }
 </style>
