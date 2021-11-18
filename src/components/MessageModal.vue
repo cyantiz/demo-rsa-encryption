@@ -1,15 +1,24 @@
 <template>
-    <div class="error-modal">
+    <div class="message-modal">
             <div class="error-box">
-                <p>There has been an error processing decryption</p>
-                <p>Please check the input values</p>
+                <p>{{modalMsg}}</p>
                 <div class="error-button" @click="$emit('close-modal')">OK</div>
             </div>   
     </div>
 </template>
 
+<script>
+
+export default {
+    props: ['modalMsg'],
+    data() {
+        return {}
+    },
+}
+</script>
+
 <style lang="less" scoped>
-.error-modal {
+.message-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -24,7 +33,6 @@
         background: white;
         padding: 20px 30px;
         border-radius: 10px;
-        color: red;
         p {
             margin-bottom: 3px;
             font-size: 14px;

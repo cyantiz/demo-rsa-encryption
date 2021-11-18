@@ -1,6 +1,15 @@
 <template>
     <form id="decrypt" @submit.prevent="decrypt">
-        <ErrorModal v-if="error" @close-modal="error = false" />
+        <MessageModal
+            v-if="error"
+            @close-modal="error = false"
+            modal-msg="There has been an error processing decryption"
+        />
+        <MessageModal
+            v-if="isCopied"
+            @close-modal="isCopied = false"
+            modal-msg="Your text has been copied to Clipboard"
+        />
         <div class="container">
             <div class="ciphertext">
                 <h3 class="ciphertext-title title">Ciphertext:</h3>
@@ -33,22 +42,26 @@
             Decrypt<BIconArrowRight />
         </button>
         <div class="plaintext" v-if="plainText">
-            <input disabled v-model="plainText" />
+            <input disabled v-model="plainText" @click="copy(plainText)" />
+            <div>
+                <span @click="copy(plainText)">Click here to copy to clickboard</span>
+            </div>
         </div>
     </form>
 </template>
 
 <script>
 import { BIconArrowRight } from "bootstrap-vue";
-import ErrorModal from "@/components/ErrorModal.vue";
+import MessageModal from "@/components/MessageModal.vue";
 
 export default {
-    components: { BIconArrowRight, ErrorModal },
+    components: { BIconArrowRight, MessageModal },
     data() {
         return {
             cipherText: "",
             plainText: "",
             modulus: "", //n
+            isCopied: false,
             error: false,
             privateExponent: "", //d
         };
@@ -109,6 +122,15 @@ export default {
                 b = b / BigInt(2);
             }
             return res;
+        },
+        copy(text) {
+            let dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            this.isCopied = true;
         },
     },
 };
@@ -193,6 +215,18 @@ export default {
         font-size: 13px;
         word-wrap: break-word;
         word-break: break-all;
+    }
+    div {
+        margin-top: 10px;
+    }
+    span {
+        border-bottom: 1px solid white;
+        cursor: pointer;
+        transition: all ease .2s;
+        font-size: 13px;
+        &:hover {
+            border-bottom-color: black;
+        }
     }
 }
 </style>

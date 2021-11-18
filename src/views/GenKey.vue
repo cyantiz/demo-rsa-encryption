@@ -1,5 +1,10 @@
 <template>
     <div id="gen-key">
+        <MessageModal
+            v-if="activeModal"
+            @close-modal="activeModal = false"
+            modal-msg="Your text has been copied to clipboard"
+        />
         <div class="loading" v-if="loading">
             <div class="title">Key is generating...</div>
             <div class="lds-ellipsis">
@@ -16,10 +21,12 @@
                     Public Exponent (e):
                 </div>
                 <div class="public-key-exponent key-area">
+                    <div class="copy-button" @click="copy(publicExponent)"><BIconClipboardPlus/></div>
                     {{ publicExponent }}
                 </div>
                 <div class="sub-title">Modulus (n):</div>
                 <div class="public-key-modulus key-area">
+                    <div class="copy-button" @click="copy(modulus)"><BIconClipboardPlus/></div>
                     {{ modulus }}
                 </div>
             </div>
@@ -29,6 +36,7 @@
                     Private Exponent (d):
                 </div>
                 <div class="private-key-exponent key-area">
+                    <div class="copy-button" @click="copy(privateExponent)"><BIconClipboardPlus/></div>
                     {{ privateExponent }}
                 </div>
             </div>
@@ -40,13 +48,15 @@
 </template>
 
 <script>
-import { BIconArrowRight } from "bootstrap-vue";
+import { BIconArrowRight, BIconClipboardPlus } from "bootstrap-vue";
+import MessageModal from "@/components/MessageModal.vue";
 var forge = require("node-forge");
 
 export default {
-    components: { BIconArrowRight },
+    components: { BIconArrowRight, BIconClipboardPlus, MessageModal },
     data() {
         return {
+            activeModal: false,
             loading: false,
             publicExponent: 65537, // e
             modulus: "", //n
@@ -62,6 +72,8 @@ export default {
                 q = BigInt(0);
             p = await this.randomPrime(bits / 2);
             q = await this.randomPrime(bits / 2);
+            
+            // calc n and euler's totient phi(n)
             let n = p * q;
             let phi = (p - BigInt(1)) * (q - BigInt(1));
 
@@ -73,7 +85,7 @@ export default {
             this.modulus = this.converToHex(n);
             this.privateExponent = this.converToHex(d);
             this.publicExponent = e.toString();
-            // this.printProgress(p, q, n, phi, e, d);
+            this.printProgress(p, q, n, phi, e, d);
             this.loading = false;
         },
         async randomPrime(bits) {
@@ -103,17 +115,19 @@ export default {
             return ((y % m) + m) % m;
         },
         printProgress(p, q, n, phi, e, d) {
-            console.log("======START GENERATING KEY======");
-            console.log("=======GENERATE P and Q========");
-            console.log("p\n" + p.toString());
-            console.log("q\n" + q.toString());
-            console.log("=======CALC N and PHI(N)=======");
-            console.log("n\n" + n.toString());
-            console.log("phi\n" + phi.toString());
-            console.log("=========CALC E and D==========");
-            console.log("e\n" + e.toString());
-            console.log("d\n" + d.toString());
-            console.log("=====FINISH GENERATING KEY=====");
+            console.clear();
+            console.log("%c📜START GENERATING KEY", 'color: pink; background: black; font-size: 20px; font-weight: bold');
+            console.log("%c⏳GENERATE RANDOM P and Q",'color: pink; background: black; font-size: 14px; font-weight: bold');
+            console.log("🌍p\n" + p.toString(),);
+            console.log("🌍q\n" + q.toString(),);
+            console.groupEnd()
+            console.log("%c⏳CALC N and PHI(N)", 'color: pink; background: black; font-size: 14px; font-weight: bold');
+            console.log("🌍n\n" + n.toString());
+            console.log("🌍phi\n" + phi.toString());
+            console.log("%c⏳CALC E and D", 'color: pink; background: black; font-size: 14px; font-weight: bold');
+            console.log("🌍e\n" + e.toString());
+            console.log("🌍d\n" + d.toString());
+            console.log("%c👌GENERATING KEY SUCCESS",'color: pink; background: black; font-size: 20px; font-weight: bold');
         },
         converToHex(num) {
             num = num.toString(16);
@@ -123,13 +137,22 @@ export default {
                 .match(/.{1,2}/g)
                 .join(" ");
         },
+        copy(text) {
+            let dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            this.activeModal = true;
+        }   
     },
 };
 </script>
 
 <style lang="less" scoped>
 #gen-key {
-    padding: 20px;
+    padding: 10px;
     text-align: center;
 }
 
@@ -160,8 +183,8 @@ export default {
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: 40px;
-            padding: 10px;
+            height: 30px;
+            padding: 20px;
             border: 1px solid black;
             border-radius: 2px;
             font-size: 13px;
@@ -169,12 +192,36 @@ export default {
             font-family: "consolas", sans-serif;
             word-wrap: break-word;
             word-break: break-all;
-            overflow-y: auto;
+            position: relative;
+            &:hover {
+                .copy-button {
+                    opacity: 1;
+                }
+            }
+            .copy-button {
+                opacity: 0;
+                position: absolute;
+                right: 5px;
+                top: 4px;
+                font-size: 15px;
+                cursor: pointer;
+                transition: all ease .2s;
+                &:hover {
+                    color: rgba(0,0,0,0.5);
+                }
+            }
+        }
+        .key-area.public-key-exponent {
+            padding: 15px;
         }
         .key-area.public-key-modulus,
         .key-area.private-key-exponent {
-            height: 160px;
+            height: 178px;
+            overflow-y: auto;
         }
+    }
+    .public-key .public-key-title {
+        margin-top: 0px;
     }
 }
 

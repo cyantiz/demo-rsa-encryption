@@ -1,6 +1,15 @@
 <template>
     <form id="encrypt" @submit.prevent="encrypt">
-        <ErrorModal v-if="error" @close-modal="error = false" />
+        <MessageModal
+            v-if="error"
+            @close-modal="error = false"
+            modal-msg="There has been an error processing decryption"
+        />
+        <MessageModal
+            v-if="isCopied"
+            @close-modal="isCopied = false"
+            modal-msg="Your text has been copied to Clipboard"
+        />
         <div class="container">
             <div class="plaintext">
                 <h3 class="plaintext-title title">Plaintext:</h3>
@@ -32,21 +41,21 @@
         <button type="submit" class="genkey-button button">
             Encrypt<BIconArrowRight />
         </button>
-        <input
-            class="ciphertext"
-            disabled
-            v-if="cipherText"
-            v-model="cipherText"
-        />
+         <div class="ciphertext" v-if="cipherText">
+            <input disabled v-model="cipherText" />
+            <div>
+                <span @click="copy(cipherText)">Click here to copy to clickboard</span>
+            </div>
+        </div>
     </form>
 </template>
 
 <script>
 import { BIconArrowRight } from "bootstrap-vue";
-import ErrorModal from "@/components/ErrorModal.vue";
+import MessageModal from "@/components/MessageModal.vue";
 
 export default {
-    components: { BIconArrowRight, ErrorModal },
+    components: { BIconArrowRight, MessageModal },
     data() {
         return {
             plainText: "",
@@ -54,6 +63,7 @@ export default {
             publicExponent: 65537, //e
             modulus: "", //n
             error: false,
+            isCopied: false,
         };
     },
     methods: {
@@ -61,7 +71,7 @@ export default {
             this.error = false;
             this.cipherText = "";
             try {
-                // convert M (text) -> m (number)
+                // convert M (text) -> utf-8 hex string -> m (number)
                 let m = this.stringToUTF8Array(this.plainText).join("");
                 m = BigInt("0x" + m);
 
@@ -117,6 +127,15 @@ export default {
 
             return btoa(bin.join(""));
         },
+        copy(text) {
+            let dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            this.isCopied = true;
+        }
     },
 };
 </script>
@@ -166,19 +185,51 @@ export default {
     }
 }
 .ciphertext {
-    display: flex;
-    width: calc(900px - 30px);
     @media (max-width: 990px) {
         width: calc(100% - 30px);
     }
-    height: 30px;
+    width: calc(900px - 30px);
     margin: 20px auto 0 auto;
-    padding: 10px;
-    border: 1px solid black;
-    border-radius: 2px;
-    font-family: "consolas", sans-serif;
-    font-size: 13px;
-    word-wrap: break-word;
-    word-break: break-all;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    .title {
+        margin: 10px 0;
+        font-weight: 800;
+        text-align: left;
+    }
+    .sub-title {
+        text-align: left;
+        margin-top: 10px;
+    }
+    input {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 30px;
+        padding: 10px;
+        border: 1px solid black;
+        background: white;
+        color: black;
+        border-radius: 2px;
+        font-family: "consolas", sans-serif;
+        font-size: 13px;
+        word-wrap: break-word;
+        word-break: break-all;
+    }
+    div {
+        margin-top: 10px;
+    }
+    span {
+        border-bottom: 1px solid white;
+        cursor: pointer;
+        transition: all ease .2s;
+        font-size: 13px;
+        &:hover {
+            border-bottom-color: black;
+        }
+    }
 }
 </style>
