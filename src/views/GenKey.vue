@@ -103,7 +103,7 @@ export default {
                 [a, b] = [b, a % b];
                 s.push({ a, b });
             }
-            if (a != 1) {
+            if (a != BigInt(1)) {
                 return NaN; // inverse does not exists
             }
             // find the inverse
@@ -116,18 +116,23 @@ export default {
         },
         printProgress(p, q, n, phi, e, d) {
             console.clear();
-            console.log("%c📜START GENERATING KEY", 'color: pink; background: black; font-size: 20px; font-weight: bold');
-            console.log("%c⏳GENERATE RANDOM P and Q",'color: pink; background: black; font-size: 14px; font-weight: bold');
-            console.log("🌍p\n" + p.toString(),);
-            console.log("🌍q\n" + q.toString(),);
-            console.groupEnd()
-            console.log("%c⏳CALC N and PHI(N)", 'color: pink; background: black; font-size: 14px; font-weight: bold');
-            console.log("🌍n\n" + n.toString());
-            console.log("🌍phi\n" + phi.toString());
-            console.log("%c⏳CALC E and D", 'color: pink; background: black; font-size: 14px; font-weight: bold');
-            console.log("🌍e\n" + e.toString());
-            console.log("🌍d\n" + d.toString());
-            console.log("%c👌GENERATING KEY SUCCESS",'color: pink; background: black; font-size: 20px; font-weight: bold');
+            console.log("%c📜START GENERATING KEY", 'color: pink; background: black; font-size: 20px; font-weight: bold')
+            console.log("%c⏳GENERATE RANDOM P and Q",'color: pink; background: black; font-size: 14px; font-weight: bold')
+            console.log("%c🌍p " + p.toString(2).length, 'font-size: 13px;')
+            console.log(p.toString())
+            console.log("%c🌍q " + q.toString(2).length, 'font-size: 13px;')
+            console.log(q.toString())
+            console.log("%c⏳CALC N and PHI(N)", 'color: pink; background: black; font-size: 14px; font-weight: bold')
+            console.log("%c🌍n " + n.toString(2).length, 'font-size: 13px;')
+            console.log(n.toString())
+            console.log("%c🌍phi(n) " + phi.toString(2).length, 'font-size: 13px;')
+            console.log(phi.toString())
+            console.log("%c⏳CALC E and D", 'color: pink; background: black; font-size: 14px; font-weight: bold')
+            console.log("%c🌍e " + e.toString(2).length, 'font-size: 13px;')
+            console.log(e.toString())
+            console.log("%c🌍d " + d.toString(2).length, 'font-size: 13px;')
+            console.log(d.toString())
+            console.log("%c👌GENERATING KEY SUCCESS",'color: pink; background: black; font-size: 20px; font-weight: bold')
         },
         converToHex(num) {
             num = num.toString(16);

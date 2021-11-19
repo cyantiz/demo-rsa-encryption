@@ -1,8 +1,8 @@
 <template>
     <div class="message-modal">
-            <div class="error-box">
+            <div class="modal-box">
                 <p>{{modalMsg}}</p>
-                <div class="error-button" @click="$emit('close-modal')">OK</div>
+                <div class="modal-button" @click="$emit('close-modal')">OK</div>
             </div>   
     </div>
 </template>
@@ -29,7 +29,7 @@ export default {
     align-items: center;
     z-index: 200;
     background: rgba(0,0,0,0.5);
-    .error-box {
+    .modal-box {
         background: white;
         padding: 20px 30px;
         border-radius: 10px;
@@ -38,7 +38,7 @@ export default {
             font-size: 14px;
         }
     }
-    .error-button {
+    .modal-button {
         margin-top: 10px;
         display: inline-block;
         background: #2c2c2c;
@@ -47,6 +47,7 @@ export default {
         color: white;
         border-radius: 30px;
         font-size: 14px;
+        user-select: none;
     }
 }
 </style>
