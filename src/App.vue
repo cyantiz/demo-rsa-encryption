@@ -29,6 +29,10 @@ body {
     padding: 0;
 }
 
+input {
+    font-family: "Source Code Pro", "Consolas", monospace;
+}
+
 .button {
     padding: 10px 25px;
     margin: 20px auto 0px auto;

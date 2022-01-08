@@ -67,21 +67,21 @@ export default {
         async generateKey() {
             this.loading = true;
             let bits = 2048;
-            // generate prime pair p, q
+            // * generate prime pair p, q
             let p = BigInt(0),
                 q = BigInt(0);
             p = await this.randomPrime(bits / 2);
             q = await this.randomPrime(bits / 2);
             
-            // calc n and euler's totient phi(n)
+            // * calc n and euler's totient phi(n)
             let n = p * q;
             let phi = (p - BigInt(1)) * (q - BigInt(1));
 
-            // calc e and d
+            // * calc e and d
             let e = BigInt(65537);
             let d = this.modInverse(e, phi);
 
-            // convert key to hex
+            // * convert key to byte array (hex) 
             this.modulus = this.converToHex(n);
             this.privateExponent = this.converToHex(d);
             this.publicExponent = e.toString();
@@ -156,6 +156,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import (css) url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;1,300&display=swap');
+
 #gen-key {
     padding: 10px;
     text-align: center;
@@ -194,7 +196,7 @@ export default {
             border-radius: 2px;
             font-size: 13px;
             text-align: left;
-            font-family: "consolas", sans-serif;
+            font-family: "Source Code Pro", "Consolas", monospace;
             word-wrap: break-word;
             word-break: break-all;
             position: relative;

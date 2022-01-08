@@ -71,19 +71,19 @@ export default {
             this.error = false;
             this.plainText = "";
             try {
-                // convert ciphertext from base64 -> decimal number
+                // * convert ciphertext from base64 -> decimal number
                 let c = this.base64ToBigInt(this.cipherText.trim());
 
-                // convert key from hex -> decimal number
+                // * convert key from hex -> decimal number
                 let n = BigInt("0x" + this.modulus.trim().split(" ").join(""));
                 let d = BigInt(
                     "0x" + this.privateExponent.trim().split(" ").join("")
                 );
 
-                // decrypt
+                // * decrypt
                 let m = this.modPrimePow(c, d, n);
 
-                // convert m (number) -> M (text) to show
+                // * convert m (number) -> M (text) to show
                 m = m.toString(16);
                 if (m.length % 2 != 0) c = "0" + c;
                 this.plainText = this.UTF8ArrayToString(m.match(/.{1,2}/g));
@@ -174,7 +174,6 @@ export default {
             padding: 10px;
             border: 1px solid black;
             border-radius: 2px;
-            font-family: "consolas", sans-serif;
             font-size: 13px;
             word-wrap: break-word;
             word-break: break-all;
