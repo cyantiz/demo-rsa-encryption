@@ -210,7 +210,7 @@ export default {
         background: white;
         color: black;
         border-radius: 2px;
-        font-family: "consolas", sans-serif;
+        font-family: "consolas", monospace;
         font-size: 13px;
         word-wrap: break-word;
         word-break: break-all;
